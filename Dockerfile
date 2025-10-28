@@ -20,9 +20,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     unzip \
     zlib1g-dev \
-    libonig-dev \  # <--- AQUI ESTÁ A CORREÇÃO PRINCIPAL!
-    # Limpa os caches do apt para reduzir o tamanho final da imagem
-    && rm -rf /var/lib/apt/lists/*
+    libonig-dev \
+    && rm -rf /var/lib/apt/lists/* # Limpa os caches do apt para reduzir o tamanho final da imagem
 
 # Configura extensões PHP
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
@@ -89,7 +88,3 @@ RUN a2enmod rewrite \
 
 # Expõe a porta 80, que é onde o Apache escuta por requisições HTTP
 EXPOSE 80
-
-# O comando padrão da imagem `php:apache` já inicia o Apache em foreground.
-# Não é necessário um CMD customizado a menos que você queira sobrescrever esse comportamento.
-# CMD ["apache2-foreground"] # (Implícito pela imagem base)
