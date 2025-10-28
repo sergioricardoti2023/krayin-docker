@@ -49,28 +49,17 @@ RUN ln -s /usr/local/lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 RUN npm install -g npx
 
 # Define o diretório de trabalho padrão dentro do container
-# Para `php:apache`, `/var/www/html` é o DocumentRoot padrão.
 WORKDIR /var/www/html
 
 # Copia o código da sua aplicação para o diretório de trabalho
-# O Easypanel geralmente faz isso automaticamente.
 COPY . /var/www/html
 
 # Instala as dependências PHP com Composer
-# Otimiza o autoloader e limpa os caches após a instalação.
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --optimize-autoloader \
     && composer dump-autoload --optimize --classmap-authoritative \
     && php artisan optimize:clear # Limpa caches do Laravel
 
-# Se a sua aplicação Krayin precisar compilar assets frontend (JavaScript/CSS):
-# Descomente as linhas abaixo. Ex: Laravel Mix/Vite.
-# RUN npm install
-# RUN npm run build # Ou `npm run prod` dependendo do seu package.json
-
 # Define as permissões para o usuário do servidor web (www-data)
-# Essencial para que a aplicação Laravel possa escrever nos diretórios 'storage' e 'bootstrap/cache'.
-# Permissões 755 para diretórios e 644 para arquivos é um bom padrão,
-# com 775 para 'storage' e 'bootstrap/cache' para escrita pelo grupo.
 RUN chown -R www-data:www-data /var/www/html \
     && find /var/www/html -type d -exec chmod 755 {} \; \
     && find /var/www/html -type f -exec chmod 644 {} \; \
@@ -79,9 +68,6 @@ RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 775 /var/www/html/bootstrap/cache
 
 # Configura o Apache
-# Copia seu arquivo de configuração customizado do Apache.
-# Certifique-se de que o arquivo `.configs/apache.conf` esteja no mesmo nível do Dockerfile no seu projeto.
-# ESTE ARQUIVO DEVE DEFINIR O DocumentRoot CORRETAMENTE (ex: /var/www/html/public)
 COPY ./.configs/apache.conf /etc/apache2/sites-available/000-default.conf
 RUN a2enmod rewrite \
     && a2ensite 000-default.conf # Habilita o site configurado
