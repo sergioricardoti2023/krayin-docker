@@ -20,6 +20,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
     unzip \
     zlib1g-dev \
+    libonig-dev \  # <--- AQUI ESTÁ A CORREÇÃO PRINCIPAL!
     # Limpa os caches do apt para reduzir o tamanho final da imagem
     && rm -rf /var/lib/apt/lists/*
 
